@@ -20,6 +20,11 @@ const schema = new mongoose.Schema({
 schema.statics.getProjectByOwnerId = function (userId) {
     return this.find({
         owner: ObjectId(userId)
+    }).populate({
+        path: "tasks",
+        populate: {
+            path: "trackers"
+        }
     }).sort({_id: -1});
 }
 

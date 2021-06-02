@@ -1,13 +1,13 @@
 const {respondWithError, respondWithSuccess, getUserId, getPathParam} = require("../utils");
 const {
-    ProjectService: {createProject, getProjectByOwnerId, getProjectByIdAndOwnerId, updateProject},
+    ProjectService: {createProject, getProjectsByOwnerId, getProjectByIdAndOwnerId, updateProject},
     UserService: {getUserById, addProjectToUser}
 } = require("../services");
 
 const list = async (req, res) => {
     try {
         const userId = getUserId(res);
-        const projects = await getProjectByOwnerId(userId);
+        const projects = await getProjectsByOwnerId(userId);
         respondWithSuccess(res, projects);
     } catch (e) {
         respondWithError(res, e);

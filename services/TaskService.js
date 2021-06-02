@@ -1,11 +1,13 @@
+const {calculateTaskTime, calculateTasksTime} = require("../utils/common");
 const {Task} = require("../models");
 const {Types: {ObjectId}} = require("mongoose");
 
 const createTask = async (project, name = "") => {
-    return Task.create({
+    const task = await Task.create({
         project,
         name
-    })
+    });
+    return calculateTaskTime(task);
 }
 
 const updateTask = async (project, taskId, name) => {
@@ -14,7 +16,8 @@ const updateTask = async (project, taskId, name) => {
         task.project = project._id;
     }
     task.name = name;
-    return task.save()
+    await task.save()
+    return calculateTaskTime(task);
 }
 
 const deleteTask = async (taskId) => {
@@ -30,10 +33,13 @@ const addTrackerToTask = (task, tracker) => {
 const getTaskById = async (taskId) => {
     const task = await Task.findById(ObjectId(taskId))
     if (!task) throw new Error("Task not found");
-    return task;
+    return calculateTaskTime(task);
 };
 
-const getTasksByProjectId = (projectId) => (Task.find({project: ObjectId(projectId)}))
+const getTasksByProjectId = async (projectId) => {
+    const tasks = await Task.find({project: ObjectId(projectId)}).populate("trackers")
+    return calculateTasksTime(tasks);
+}
 
 module.exports = {
     createTask,

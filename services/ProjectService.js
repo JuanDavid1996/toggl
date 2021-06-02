@@ -1,9 +1,13 @@
+const {calculateProjectsTime, calculateProjectTime} = require("../utils/common");
 const {Types: {ObjectId}} = require("mongoose");
 const {Project} = require("../models");
 
 const getProjectById = (id) => (Project.findById(ObjectId(id)));
 
-const getProjectByOwnerId = (userId) => (Project.getProjectByOwnerId(userId));
+const getProjectsByOwnerId = async (userId) => {
+    const projects = await Project.getProjectByOwnerId(userId)
+    return calculateProjectsTime(projects);
+};
 
 const createProject = async (userId, _default = false, name = "(NO PROJECT)") => {
 
@@ -12,9 +16,11 @@ const createProject = async (userId, _default = false, name = "(NO PROJECT)") =>
         throw new Error("Project name already used");
     }
 
-    return Project.create({
+    const project = await Project.create({
         owner: ObjectId(userId), default: _default, name
     });
+
+    return calculateProjectTime(project);
 }
 
 const addTaskToProject = (project, task) => {
@@ -25,7 +31,7 @@ const addTaskToProject = (project, task) => {
 const getProjectByIdAndOwnerId = async (projectId, ownerId) => {
     const project = await Project.getProjectByIdAndOwnerId(projectId, ownerId).populate("tasks")
     if (!project) throw new Error("Project not found.");
-    return project
+    return calculateProjectTime(project);
 }
 
 const updateProject = async (projectId, ownerId, name) => {
@@ -40,7 +46,7 @@ const getDefaultProjectByOwnerId = (ownerId) => (Project.getDefaultProjectByOwne
 module.exports = {
     createProject,
     addTaskToProject,
-    getProjectByOwnerId,
+    getProjectsByOwnerId,
     getProjectByIdAndOwnerId,
     updateProject,
     getDefaultProjectByOwnerId,
