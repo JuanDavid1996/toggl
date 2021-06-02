@@ -33,7 +33,7 @@ const addTrackerToTask = (task, tracker) => {
 const getTaskById = async (taskId) => {
     const task = await Task.findById(ObjectId(taskId))
     if (!task) throw new Error("Task not found");
-    return calculateTaskTime(task);
+    return task;
 };
 
 const getTasksByProjectId = async (projectId) => {
