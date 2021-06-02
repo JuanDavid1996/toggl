@@ -13,7 +13,7 @@ const list = async (req, res) => {
 const create = async (req, res) => {
     try {
         const user = await createUser(req.body);
-        const defaultProject = await createProject(user, true);
+        const defaultProject = await createProject(user._id, true);
         await addProjectToUser(user, defaultProject);
         respondWithSuccess(res, user);
     } catch (e) {
